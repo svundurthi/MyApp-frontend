@@ -1,0 +1,31 @@
+
+<div  col-xs-12">
+    <div class="col-sm-5 no-padding">
+        <div class="loginFormWrpr">
+            <div class="divHdng bg-gry borderBlue">
+                <h2>Admin Login</h2>
+            </div>
+            <div class="loginForm" style="float:right">
+                <form role="form" data-ng-submit="vm.login(vm.user,vm.password)" name="form.login" novalidate autocomplete="off">
+                    <div class="col-xs-12 alert alert-danger marg-bottom" ng-if="vm.errorMsg">
+                        <p class="errMsgHldr " ng-bind-html="vm.errorMsg"></p>
+                    </div>
+                    <div class="form-group">
+                        <label for="user">User</label>
+                        <input type="text" ng-model="vm.user" id="user" name="user" required maxlength="20" autocomplete="off" class=""/>
+                        <p ng-show="form.login.user.$error.required && !form.login.user.$pristine" class="error">{{'login.messages.error.userid' }}</p>
+                        </div>
+                        <div class="form-group marg-bottom">
+                            <label for="password">Password</label>
+                            <input type="password" ng-model="vm.password" id="password" name="password" required maxlength="20"  autocomplete="off" class=""/>
+                            <p ng-show="(form.login.password.$invalid && !form.login.password.$pristine) || form.login.password.$error.minlength" class="error">{{'login.messages.error.password' }}</p>
+                        </div>
+                        <div>
+                            <button type="button" class="btn btn-default marg-bottom secondaryBtn" ng-click="vm.reset(event)">Reset</button>
+                            <button type="submit" class="btn btn-default marg-bottom primaryBtn" data-ng-disabled="form.login.$invalid || !vm.disableBtn">Submit</button>
+                        </div>
+                    </form>
+            </div>
+        </div>
+    </div>
+</div>
