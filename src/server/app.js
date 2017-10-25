@@ -13,14 +13,10 @@ var proxyMiddleware = require('http-proxy-middleware');
 var environment = process.env.NODE_ENV;
 var context = '/api';
 var proxy = proxyMiddleware(context, {
-    target: 'http://localhost:8091'
-});
-app.use(favicon(__dirname + '/favicon.ico'));
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-app.use(logger('dev'));
 
-app.use('/api', require('./routes'));
+   target: 'http://localhost:8091'
+});
+
 
 console.log('About to crank up node');
 console.log('PORT=' + port);
@@ -48,18 +44,47 @@ switch (environment) {
     // Any deep link calls should return index.html
     app.use('/*', express.static('./build/index.html'));
     break;
-  default:
-    console.log('** DEV **');
-    app.use(express.static('./src/client/'));
-    app.use(express.static('./'));
-    app.use(express.static('./tmp'));
-    // Any invalid calls for templateUrls are under app/* and should return 404
-    app.use('/app/*', function (req, res, next) {
-      four0four.send404(req, res);
-    });
-    // Any deep link calls should return index.html
-    app.use('/*', express.static('./src/client/index.html'));
-    break;
+   case 'BE':
+        console.log('** BE **');
+        app.use(proxy);
+
+        app.use(favicon(__dirname + '/favicon.ico'));
+        app.use(bodyParser.urlencoded({extended: true}));
+        app.use(bodyParser.json());
+        // app.use(logger('be'));
+
+
+
+        app.use(express.static('./src/client/'));
+        app.use(express.static('./'));
+        app.use(express.static('./tmp'));
+        // Any invalid calls for templateUrls are under app/* and should return 404
+        app.use('/app/*', function (req, res, next) {
+            four0four.send404(req, res);
+        });
+        // Any deep link calls should return index.html
+        app.use('/*', express.static('./src/client/index.html'));
+
+        break;
+    default:
+        console.log('** DEV **');
+
+        app.use(favicon(__dirname + '/favicon.ico'));
+        app.use(bodyParser.urlencoded({extended: true}));
+        app.use(bodyParser.json());
+        app.use(logger('dev'));
+        app.use('/api', require('./routes'));
+
+        app.use(express.static('./src/client/'));
+        app.use(express.static('./'));
+        app.use(express.static('./tmp'));
+        // Any invalid calls for templateUrls are under app/* and should return 404
+        app.use('/app/*', function (req, res, next) {
+            four0four.send404(req, res);
+        });
+        // Any deep link calls should return index.html
+        app.use('/*', express.static('./src/client/index.html'));
+        break;
 }
 
 app.listen(port, function () {

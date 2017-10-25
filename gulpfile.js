@@ -13,7 +13,6 @@ var protractor = $.protractor.protractor;
 var colors = $.util.colors;
 var envenv = $.util.env;
 var port = process.env.PORT || config.defaultPort;
-
 /**
  * yargs variables can be passed in to alter the behavior, when present.
  * Example: gulp serve-dev
@@ -316,10 +315,14 @@ gulp.task('autotest', function(done) {
  * --debug-brk or --debug
  * --nosync
  */
-gulp.task('serve-dev', ['inject'], function() {
-  serve(true /*isDev*/);
+gulp.task('serve-dev', ['inject'], function () {
+    serve(true, false /*isDev*/);
 });
 
+
+gulp.task('serve-be', ['inject'], function () {
+    serve(true, true/*isBE*/);
+});
 /**
  * serve the build environment
  * --debug-brk or --debug
@@ -414,48 +417,60 @@ function orderSrc(src, order) {
  * @param  {Boolean} isDev - dev or build mode
  * @param  {Boolean} specRunner - server spec runner html
  */
-function serve(isDev, specRunner) {
-  var debugMode = semver.satisfies(process.versions.node, '>=7.0.0') ? '--inspect' : '--debug';
+function serve(isDev, isBE, specRunner) {
+  
+    var debugMode = '--debug';
+    var nodeOptions = getNodeOptions(isDev, isBE);
 
-  var nodeOptions = getNodeOptions(isDev);
+    nodeOptions.nodeArgs = [debugMode + '=5858'];
 
-  nodeOptions.nodeArgs = [debugMode + '=5858'];
+    if (args.verbose) {
+        console.log(nodeOptions);
+    }
 
-  if (args.verbose) {
-    console.log(nodeOptions);
-  }
-
-  return $.nodemon(nodeOptions)
-    .on('restart', ['vet'], function(ev) {
-      log('*** nodemon restarted');
-      log('files changed:\n' + ev);
-      setTimeout(function() {
-        browserSync.notify('reloading now ...');
-        browserSync.reload({ stream: false });
-      }, config.browserReloadDelay);
-    })
-    .on('start', function() {
-      log('*** nodemon started');
-      startBrowserSync(isDev, specRunner);
-    })
-    .on('crash', function() {
-      log('*** nodemon crashed: script crashed for some reason');
-    })
-    .on('exit', function() {
-      log('*** nodemon exited cleanly');
-    });
+    return $.nodemon(nodeOptions)
+        .on('restart', ['vet'], function (ev) {
+            log('*** nodemon restarted');
+            log('files changed:\n' + ev);
+            setTimeout(function () {
+                browserSync.notify('reloading now ...');
+                browserSync.reload({stream: false});
+            }, config.browserReloadDelay);
+        })
+        .on('start', function () {
+            log('*** nodemon started');
+            startBrowserSync(isDev, specRunner);
+        })
+        .on('crash', function () {
+            log('*** nodemon crashed: script crashed for some reason');
+        })
+        .on('exit', function () {
+            log('*** nodemon exited cleanly');
+        });
 }
 
-function getNodeOptions(isDev) {
-  return {
-    script: config.nodeServer,
-    delayTime: 1,
-    env: {
-      "PORT": port,
-      "NODE_ENV": isDev ? 'dev' : 'build'
-    },
-    watch: [config.server]
-  };
+function getNodeOptions(isDev,isBE) {
+      function _getEnV() {
+
+        if (isBE) {
+
+            return 'BE';
+        } else {
+            return isDev ? 'dev' : 'build';
+        }
+    }
+
+    return {
+        script: config.nodeServer,
+        delayTime: 1,
+        env: {
+            'PORT': port,
+            'NODE_ENV': _getEnV()
+        },
+        watch: [config.server]
+    };
+
+  
 }
 
 //function runNodeInspector() {

@@ -7,13 +7,13 @@
         .constant('moment', moment)
         .constant('_', UnderScore)
         .factory('API', ['$http', function ($http) {
-            var CONTEXT = '/api/myapp';
+            var CONTEXT = '/api/';
             var HEADERS = {
                 'Content-Type': 'application/json',
                 'Content-Cache': 'no-cache'
             };
             var URL = {
-                    LOGIN: CONTEXT.concat('/login'),
+                    LOGIN: CONTEXT.concat('/myapp/login'),
                 };
             return {
                 LOCATION: function () {

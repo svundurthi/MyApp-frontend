@@ -33,7 +33,7 @@
             var params = {};
             var deferred = $q.defer();
             angular.copy(credential, params);
-            $http.post(BACKEND.LOGIN, params, location.headers)
+            $http.post(BACKEND.LOGIN, params,location.headers)
                 .then(_success, _error)
                 .catch(_fail);
 

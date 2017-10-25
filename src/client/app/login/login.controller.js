@@ -37,7 +37,7 @@
                         
                         ActionFactory.setHomeRedirect('dashboard');                        
                             $rootScope.$broadcast('login-successful');
-                            DropdownFactory.setusername(vm.user);
+                            /*DropdownFactory.setusername(vm.user);*/
                             $state.go('dashboard');
                             $rootScope.nav.showNav = true;
                        
